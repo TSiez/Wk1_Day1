@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tester.io — Brand Showcase</title>
+  <link rel="icon" type="image/png" href="/brand_assets/Tester%20Logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg-stage:#1A1A1A;
+      --bg-stage-deep:#0F0F0F;
+      --card-dark:#161616;
+      --card-dark-2:#1C1C1C;
+      --card-cream:#F4EFE2;
+      --gold:#C6A559;
+      --gold-light:#E6B979;
+      --gold-deep:#8A6F35;
+      --text-primary:#F5EFE2;
+      --text-on-cream:#1A1407;
+      --text-muted-dark:#8A8275;
+      --text-muted-cream:#6E6755;
+      --border-card:rgba(255,255,255,.06);
+      --border-card-strong:rgba(255,255,255,.12);
+    }
+    *{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    html,body{
+      background:
+        radial-gradient(80% 60% at 50% 0%, #232323 0%, #161616 60%, #0E0E0E 100%);
+      color:var(--text-primary);
+      font-family:'Montserrat', ui-sans-serif, system-ui, sans-serif;
+      min-height:100vh;
+    }
+    body{ line-height:1.55; font-weight:400; }
+
+    .stage{
+      max-width:1280px; margin:0 auto;
+      padding: clamp(20px, 3vw, 40px);
+    }
+
+    /* Bento grid (matches ref layout) */
+    .bento{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: minmax(0, auto);
+      gap: 14px;
+    }
+    @media (max-width: 900px){
+      .bento{ grid-template-columns: repeat(6, 1fr); gap:12px; }
+    }
+    @media (max-width: 560px){
+      .bento{ grid-template-columns: 1fr; }
+    }
+
+    /* Card chrome */
+    .card{
+      border-radius: 14px;
+      overflow:hidden;
+      position:relative;
+      background:var(--card-dark);
+      border:1px solid var(--border-card);
+      box-shadow:
+        0 30px 60px -30px rgba(0,0,0,.6),
+        inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .card-cream{
+      background:var(--card-cream);
+      color:var(--text-on-cream);
+      border:1px solid rgba(0,0,0,.06);
+      box-shadow:
+        0 30px 60px -30px rgba(0,0,0,.4),
+        inset 0 1px 0 rgba(255,255,255,.6);
+    }
+
+    /* Spans */
+    .c-logo     { grid-column: span 3; aspect-ratio: 1 / 0.88; }
+    .c-laptop   { grid-column: span 4; aspect-ratio: 1.42 / 1; }
+    .c-ticker   { grid-column: span 5; grid-row: span 2; }
+    .c-act      { grid-column: span 3; aspect-ratio: 1 / 0.88; }
+    .c-colors   { grid-column: span 4; aspect-ratio: 1.42 / 1; }
+    .c-showcase { grid-column: span 8; aspect-ratio: 2.45 / 1; }
+    .c-grow     { grid-column: span 4; aspect-ratio: 1.18 / 1; }
+
+    @media (max-width: 900px){
+      .c-logo     { grid-column: span 3; }
+      .c-laptop   { grid-column: span 3; }
+      .c-ticker   { grid-column: span 6; grid-row: auto; aspect-ratio: 1.2 / 1; }
+      .c-act      { grid-column: span 3; }
+      .c-colors   { grid-column: span 3; }
+      .c-showcase { grid-column: span 6; aspect-ratio: 2 / 1; }
+      .c-grow     { grid-column: span 6; aspect-ratio: 1.5 / 1; }
+    }
+    @media (max-width: 560px){
+      .c-logo, .c-laptop, .c-ticker, .c-act, .c-colors, .c-showcase, .c-grow{
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* Logo card — gold checkmark + wordmark */
+    .logo-card{
+      display:flex; align-items:center; justify-content:center; gap:14px;
+      padding: 6%;
+    }
+    .logo-card img{
+      width: 28%; height:auto; display:block;
+      filter: drop-shadow(0 6px 18px rgba(198,165,89,.18));
+    }
+    .logo-wordmark{
+      font-weight:700; letter-spacing:.18em;
+      font-size: clamp(14px, 1.6vw, 22px);
+      color:var(--text-on-cream);
+    }
+    .logo-wordmark .sub{
+      display:block; margin-top:6px;
+      font-size: .5em; letter-spacing:.4em; font-weight:600;
+      color: var(--gold-deep);
+    }
+
+    /* Laptop photo */
+    .photo-fill{ width:100%; height:100%; object-fit:cover; display:block; }
+    .photo-card{ position:relative; }
+    .photo-card::after{
+      content:""; position:absolute; inset:0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.55) 100%);
+      pointer-events:none;
+    }
+
+    /* Ticker card */
+    .ticker-card{
+      padding: 26px 26px 22px;
+      display:flex; flex-direction:column;
+      background:
+        radial-gradient(80% 60% at 100% 0%, rgba(230,185,121,.06), transparent 60%),
+        var(--card-dark);
+    }
+    .ticker-head{
+      display:flex; align-items:center; gap:14px;
+    }
+    .ticker-mark{
+      width:44px; height:44px; border-radius:10px;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#F0CC8C 0%,#E6B979 30%,#C6A559 70%,#8A6F35 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,240,200,.55),
+        inset 0 -1px 0 rgba(80,55,15,.4),
+        0 8px 22px -8px rgba(230,185,121,.55);
+    }
+    .ticker-meta{ display:flex; flex-direction:column; gap:2px; }
+    .ticker-name{
+      font-size: 18px; font-weight:600; letter-spacing:-.01em; color:var(--text-primary);
+      display:flex; align-items:center; gap:10px;
+    }
+    .ticker-tag{
+      font-size: 11px; padding: 3px 8px; border-radius:6px;
+      letter-spacing:.12em; font-weight:600;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color: var(--text-primary);
+    }
+    .ticker-price{
+      margin-top: 18px;
+      display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+    }
+    .ticker-price .num{
+      font-size: clamp(22px, 2.5vw, 30px); font-weight:600; letter-spacing:-.01em;
+      font-variant-numeric: tabular-nums lining-nums;
+      color: var(--text-primary);
+    }
+    .ticker-price .delta{
+      font-size: 13px; font-weight:500; color:#7FB069;
+      font-variant-numeric: tabular-nums lining-nums;
+    }
+    .ticker-price .live{
+      font-size: 10px; letter-spacing:.18em; text-transform:uppercase;
+      color: var(--text-muted-dark); font-weight:600; margin-left: 2px;
+    }
+
+    .pill-row{
+      display:flex; gap:6px; margin-top: 24px; flex-wrap:wrap;
+    }
+    .pill{
+      font-size: 11px; padding: 6px 10px; border-radius:7px;
+      font-weight:600; letter-spacing:.04em;
+      color: var(--text-muted-dark);
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .pill.active{
+      color:#1A1407;
+      background:linear-gradient(135deg,#F0CC8C 0%,#E6B979 30%,#C6A559 70%,#8A6F35 100%);
+      border-color: transparent;
+    }
+
+    .chart{
+      flex:1; margin-top: 20px; position:relative;
+      display:flex; align-items:flex-end;
+    }
+    .chart svg{ width:100%; height:100%; display:block; }
+
+    /* Tagline block (See Clearly, Act Intentionally, Grow Sustainably) */
+    .tagline{
+      padding: 26px;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .tagline-icon{
+      width: 26px; height: 26px; color: var(--text-muted-dark);
+    }
+    .tagline-title{
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight:600; letter-spacing:-.01em;
+      color:var(--text-primary);
+      margin-top: 6px;
+    }
+    .tagline-body{
+      font-size: 13px; line-height:1.55;
+      color: var(--text-muted-dark);
+      max-width: 340px;
+    }
+
+    /* Ticker bottom block — split: top is ticker, bottom is tagline */
+    .ticker-card .tagline{
+      padding: 24px 0 0 0;
+      margin-top: 28px;
+      border-top: 1px solid var(--border-card);
+    }
+
+    /* Act Intentionally card — photo with overlay text */
+    .photo-overlay{
+      position:absolute; inset:0;
+      padding: 22px;
+      display:flex; flex-direction:column; justify-content:flex-end;
+      background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.78) 100%);
+    }
+    .photo-overlay .tagline-icon{ color: var(--text-muted-dark); margin-bottom: 6px; }
+    .photo-overlay .tagline-title{ color:#fff; margin-top: 0; }
+    .photo-overlay .tagline-body{ color: rgba(245,239,226,.78); }
+
+    /* Color swatches card */
+    .colors-card{
+      display:grid; grid-template-columns: repeat(3, 1fr);
+      height: 100%;
+    }
+    .swatch{
+      position:relative; display:flex; flex-direction:column; justify-content:flex-end;
+      padding: 22px;
+    }
+    .swatch-1{ background: linear-gradient(180deg, #1F1A12 0%, #15120D 100%); }
+    .swatch-2{ background: linear-gradient(180deg, #2A2218 0%, #1F1A12 100%); }
+    .swatch-3{ background: linear-gradient(180deg, #0E0C08 0%, #050402 100%); }
+    .swatch-color{
+      position:absolute; top:0; left:0; right:0;
+      height: 58%;
+    }
+    .swatch-1 .swatch-color{ background: linear-gradient(135deg, #F0CC8C 0%, #E6B979 100%); }
+    .swatch-2 .swatch-color{ background: linear-gradient(135deg, #D6B36A 0%, #C6A559 100%); }
+    .swatch-3 .swatch-color{ background: linear-gradient(180deg, #161616 0%, #0B0A08 100%); border-bottom: 1px solid rgba(255,255,255,.04); }
+    .swatch-color::after{
+      content:""; position:absolute; inset:0;
+      background: radial-gradient(50% 70% at 30% 20%, rgba(255,255,255,.18), transparent 60%);
+      mix-blend-mode: screen;
+    }
+    .swatch-label{ position:relative; color: var(--text-primary); font-size: 13px; font-weight:600; letter-spacing:-.005em; }
+    .swatch-label .small{ display:block; margin-top: 2px; font-size: 10.5px; font-weight:500; letter-spacing:.04em; color: var(--text-muted-dark); font-variant-numeric: tabular-nums; }
+
+    /* Showcase wide card — environmental hero */
+    .showcase-card{ position:relative; }
+    .showcase-overlay{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .showcase-bar{
+      background: linear-gradient(180deg, rgba(20,20,20,.78), rgba(10,10,10,.92));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 22px 36px;
+      display:flex; align-items:center; gap: 26px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,.7);
+      max-width: 78%;
+    }
+    .showcase-divider{
+      width:1px; height: 56px; background: rgba(255,255,255,.12);
+    }
+    .showcase-title{
+      font-size: clamp(15px, 1.5vw, 22px);
+      font-weight:600; letter-spacing:-.015em; color: var(--text-primary);
+      line-height: 1.15;
+    }
+    .showcase-title .sub{
+      display:block; margin-top:5px;
+      font-size: .68em; font-weight:500;
+      color: var(--text-muted-dark); letter-spacing:.005em;
+    }
+    .showcase-logo{
+      display:flex; align-items:center; gap: 14px;
+    }
+    .showcase-logo img{ width: 46px; height:auto; filter: drop-shadow(0 6px 14px rgba(230,185,121,.4)); }
+    .showcase-logo .text{
+      font-size: clamp(16px, 1.6vw, 22px);
+      font-weight:700; letter-spacing:.18em; color: var(--text-primary);
+    }
+    .showcase-logo .text .sub{
+      display:block; margin-top:5px;
+      font-size: .5em; letter-spacing:.4em; font-weight:600;
+      color: var(--gold-light);
+    }
+
+    /* Grow Sustainably — geometric photo + overlay */
+    .grow-card{ position:relative; }
+
+    /* Subtle noise for atmosphere on dark cards */
+    .noise::before{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      opacity:.05; mix-blend-mode: overlay;
+      background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 .86 0 0 0 0 .58 0 0 0 .8 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+
+    /* Header / footer chrome */
+    .stage-head{
+      display:flex; align-items:center; justify-content:space-between;
+      margin: 4px 4px 24px;
+    }
+    .stage-head .label{
+      font-size: 11px; letter-spacing:.22em; text-transform:uppercase;
+      color: var(--text-muted-dark); font-weight:600;
+    }
+    .stage-head .crumb{
+      font-size: 11px; letter-spacing:.22em; text-transform:uppercase;
+      color: var(--gold-light); font-weight:600;
+    }
+    .stage-foot{
+      margin: 28px 4px 4px;
+      display:flex; align-items:center; justify-content:space-between;
+      color: var(--text-muted-dark);
+      font-size: 11px; letter-spacing:.18em; text-transform:uppercase; font-weight:600;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="stage-head">
+      <span class="label">Brand &nbsp;/&nbsp; Tester.io</span>
+      <span class="crumb">2026 &nbsp;&middot;&nbsp; Identity System</span>
+    </div>
+
+    <div class="bento">
+
+      <!-- 1. Logo card (light) -->
+      <div class="card card-cream c-logo logo-card">
+        <img src="/brand_assets/Tester%20Logo.png" alt="Tester.io logo" />
+        <div class="logo-wordmark">
+          TESTER.IO
+          <span class="sub">REVIEW</span>
+        </div>
+      </div>
+
+      <!-- 2. Laptop photo -->
+      <div class="card c-laptop photo-card noise" style="background:
+          radial-gradient(120% 80% at 50% 0%, #1E1B14 0%, #0C0B07 70%);">
+        <!-- Stylized laptop display -->
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding: 8% 10% 14%;">
+          <div style="width:100%; aspect-ratio:16/10; border-radius:8px;
+                      background: linear-gradient(180deg, #0F0E0A, #060503);
+                      border:1px solid rgba(255,255,255,.08);
+                      box-shadow:
+                        0 32px 60px -20px rgba(0,0,0,.7),
+                        inset 0 1px 0 rgba(255,255,255,.06);
+                      display:flex; flex-direction:column; align-items:center; justify-content:center;
+                      padding: 8% 10%; position:relative; overflow:hidden;">
+            <div style="position:absolute; top:0; left:0; right:0; height:14%; background:linear-gradient(180deg, rgba(230,185,121,.10), transparent);"></div>
+            <div style="font-size: clamp(11px, 1.2vw, 16px); font-weight:600; letter-spacing:-.01em; color:#F5EFE2; text-align:center;">
+              Documents You Can Trust
+            </div>
+            <div style="font-size: clamp(8px, .8vw, 11px); font-weight:500; color: var(--text-muted-dark); text-align:center; margin-top:5px; letter-spacing:.02em;">
+              Decisions You Can Stand Behind
+            </div>
+            <!-- mini doc tiles -->
+            <div style="margin-top:10%; display:flex; gap:6px; width:80%;">
+              <div style="flex:1; aspect-ratio:1.2/1; border-radius:4px; background:linear-gradient(180deg, #1F1A12, #15120D); border:1px solid rgba(198,165,89,.18);"></div>
+              <div style="flex:1; aspect-ratio:1.2/1; border-radius:4px; background:linear-gradient(180deg, #1F1A12, #15120D); border:1px solid rgba(198,165,89,.18);"></div>
+              <div style="flex:1; aspect-ratio:1.2/1; border-radius:4px; background:linear-gradient(180deg, #2A2218, #1F1A12); border:1px solid rgba(230,185,121,.32);"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Laptop base/shadow -->
+        <div style="position:absolute; left:6%; right:6%; bottom:6%; height:3px; border-radius:3px;
+                    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+                    box-shadow: 0 20px 40px -8px rgba(0,0,0,.7);"></div>
+      </div>
+
+      <!-- 3. Ticker / data card (spans 2 rows) -->
+      <div class="card c-ticker ticker-card noise">
+        <div class="ticker-head">
+          <div class="ticker-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" stroke="#1A1407" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="ticker-meta">
+            <div class="ticker-name">
+              q4_financial_review<span class="ticker-tag">FIN</span>
+            </div>
+            <div style="font-size:11px; letter-spacing:.14em; text-transform:uppercase; color: var(--text-muted-dark); font-weight:600;">38 pages &middot; SOX v4</div>
+          </div>
+        </div>
+
+        <div class="ticker-price">
+          <span class="num">12 findings</span>
+          <span class="delta">+ 4 high &nbsp; + 6 med</span>
+          <span class="live">Reviewed 4.2s</span>
+        </div>
+
+        <div class="pill-row">
+          <span class="pill">All</span>
+          <span class="pill">High</span>
+          <span class="pill">Med</span>
+          <span class="pill">Low</span>
+          <span class="pill">Open</span>
+          <span class="pill active">Reviewed</span>
+        </div>
+
+        <div class="chart">
+          <svg viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="gold-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#E6B979" stop-opacity=".25"/>
+                <stop offset="1" stop-color="#E6B979" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- gridlines -->
+            <g stroke="rgba(255,255,255,.05)" stroke-width="1">
+              <line x1="0" y1="50" x2="600" y2="50"/>
+              <line x1="0" y1="100" x2="600" y2="100"/>
+              <line x1="0" y1="150" x2="600" y2="150"/>
+            </g>
+            <!-- area -->
+            <path d="M 0 150 L 40 142 L 80 130 L 120 138 L 160 118 L 200 122 L 240 100 L 280 108 L 320 86 L 360 92 L 400 70 L 440 78 L 480 56 L 520 60 L 560 42 L 600 48 L 600 200 L 0 200 Z"
+                  fill="url(#gold-fill)"/>
+            <!-- line -->
+            <path d="M 0 150 L 40 142 L 80 130 L 120 138 L 160 118 L 200 122 L 240 100 L 280 108 L 320 86 L 360 92 L 400 70 L 440 78 L 480 56 L 520 60 L 560 42 L 600 48"
+                  fill="none" stroke="#E6B979" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- last point dot -->
+            <circle cx="600" cy="48" r="3" fill="#E6B979"/>
+          </svg>
+        </div>
+
+        <!-- See Clearly tagline (bottom half) -->
+        <div class="tagline">
+          <svg class="tagline-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 11V4l3 3M9 11h3M9 11l-3 5a5 5 0 0 0 5 5h2a5 5 0 0 0 5-5l-3-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="tagline-title">See Clearly</div>
+          <div class="tagline-body">Turn raw documents into meaningful findings through structured review and audit-ready evidence.</div>
+        </div>
+      </div>
+
+      <!-- 4. Act Intentionally — metallic close-up with overlay -->
+      <div class="card c-act photo-card noise" style="background:
+          radial-gradient(140% 100% at 100% 0%, #2A2218 0%, #0F0C07 70%);">
+        <!-- Stylized large logo half-visible (metallic close-up vibe) -->
+        <div style="position:absolute; right:-18%; top:-12%; width:90%; height:90%; opacity:.82;
+                    filter: drop-shadow(0 30px 60px rgba(0,0,0,.7));
+                    transform: rotate(-8deg);">
+          <img src="/brand_assets/Tester%20Logo.png" alt="" style="width:100%; height:100%; object-fit:contain;
+               filter: drop-shadow(0 14px 28px rgba(0,0,0,.6));" />
+        </div>
+        <div class="photo-overlay">
+          <svg class="tagline-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 5v14M12 8v11M18 3v16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <div class="tagline-title">Read Completely</div>
+          <div class="tagline-body">Replace skim reviews with disciplined, evidence-backed coverage of every document.</div>
+        </div>
+      </div>
+
+      <!-- 5. Color swatches -->
+      <div class="card c-colors noise" style="padding:0;">
+        <div class="colors-card">
+          <div class="swatch swatch-1">
+            <div class="swatch-color"></div>
+            <div class="swatch-label">Signal Gold<span class="small">#E6B979</span></div>
+          </div>
+          <div class="swatch swatch-2">
+            <div class="swatch-color"></div>
+            <div class="swatch-label">Sovereign Gold<span class="small">#C6A559</span></div>
+          </div>
+          <div class="swatch swatch-3">
+            <div class="swatch-color"></div>
+            <div class="swatch-label">Reviewer Black<span class="small">#0C0C0C</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Showcase wide -->
+      <div class="card c-showcase showcase-card noise" style="background:
+          radial-gradient(60% 100% at 50% 100%, rgba(230,185,121,.10) 0%, transparent 60%),
+          radial-gradient(120% 80% at 50% 0%, #1A1A1A 0%, #050505 80%);">
+        <!-- Soft horizontal stage light + faint floor -->
+        <div style="position:absolute; left:0; right:0; bottom:0; height:30%;
+                    background: linear-gradient(180deg, transparent, rgba(255,255,255,.025));"></div>
+        <div style="position:absolute; left:14%; right:14%; bottom:8%; height:1px;
+                    background: linear-gradient(90deg, transparent, rgba(230,185,121,.25), transparent);"></div>
+        <div class="showcase-overlay">
+          <div class="showcase-bar">
+            <div class="showcase-logo">
+              <img src="/brand_assets/Tester%20Logo.png" alt="Tester.io" />
+              <span class="text">TESTER.IO<span class="sub">REVIEW</span></span>
+            </div>
+            <div class="showcase-divider"></div>
+            <div class="showcase-title">Documents You Can Trust
+              <span class="sub">Decisions You Can Stand Behind</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Grow Sustainably — geometric -->
+      <div class="card c-grow grow-card noise" style="background:
+          radial-gradient(120% 80% at 100% 0%, #1F1A12 0%, #0A0908 70%);">
+        <!-- Geometric facets, mimicking the angular surfaces in ref -->
+        <svg viewBox="0 0 520 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true"
+             style="position:absolute; inset:0; width:100%; height:100%; opacity:.55;">
+          <defs>
+            <linearGradient id="facet-a" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2A2218"/>
+              <stop offset="1" stop-color="#0A0908"/>
+            </linearGradient>
+            <linearGradient id="facet-b" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#1F1A12"/>
+              <stop offset="1" stop-color="#3A2F18"/>
+            </linearGradient>
+            <linearGradient id="facet-c" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#15120D"/>
+              <stop offset="1" stop-color="#050402"/>
+            </linearGradient>
+          </defs>
+          <polygon points="380,0 520,0 520,200 360,160" fill="url(#facet-b)"/>
+          <polygon points="280,40 380,0 360,160 240,220" fill="url(#facet-a)"/>
+          <polygon points="240,220 360,160 520,200 520,440 320,380" fill="url(#facet-c)"/>
+          <polygon points="180,260 240,220 320,380 200,440" fill="url(#facet-a)" opacity=".8"/>
+          <line x1="380" y1="0" x2="360" y2="160" stroke="rgba(230,185,121,.10)" stroke-width="1"/>
+          <line x1="240" y1="220" x2="320" y2="380" stroke="rgba(230,185,121,.08)" stroke-width="1"/>
+        </svg>
+        <div class="photo-overlay" style="background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.82) 100%);">
+          <svg class="tagline-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20 10 14 14 18 20 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 8h4v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="tagline-title">Scale Confidently</div>
+          <div class="tagline-body">Support long-term review programs through analytical rigor, audit structure, and finding intelligence.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="stage-foot">
+      <span>Tester.io &nbsp;/&nbsp; Identity</span>
+      <span>v 1.0 &nbsp;&middot;&nbsp; 2026</span>
+    </div>
+  </div>
+
+</body>
+</html>

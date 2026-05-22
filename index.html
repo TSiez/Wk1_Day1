@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tester.io — AI document review for regulated teams</title>
+  <meta name="description" content="Tester.io reviews contracts, financials, and policies in seconds — surfacing the clauses, anomalies, and compliance gaps your team would otherwise miss." />
+  <link rel="icon" type="image/png" href="/brand_assets/Tester%20Logo.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg-base:#0B0A08;
+      --bg-elevated:#15120D;
+      --bg-floating:#1F1A12;
+      --bg-ridge:#221C13;
+      --gold:#C6A559;
+      --gold-light:#E6B979;
+      --gold-deep:#8A6F35;
+      --gold-glow:rgba(230,185,121,.28);
+      --text-primary:#F5EFE2;
+      --text-secondary:#C9C2B4;
+      --text-muted:#8A8275;
+      --border-subtle:rgba(198,165,89,.14);
+      --border-strong:rgba(198,165,89,.32);
+      --danger:#D87B5A;
+      --warn:#E6B979;
+      --success:#8FB76A;
+    }
+    *{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    html,body{ background:var(--bg-base); color:var(--text-primary); font-family:'Montserrat', ui-sans-serif, system-ui, sans-serif; }
+    body{ line-height:1.7; font-weight:400; }
+    ::selection{ background:rgba(230,185,121,.35); color:#1A1407; }
+
+    /* Typographic system — Montserrat across, weight + tracking does the work */
+    .h-display{ letter-spacing:-0.04em; line-height:1.02; font-weight:700; }
+    .h-section{ letter-spacing:-0.028em; line-height:1.08; font-weight:700; }
+    .h-feature{ letter-spacing:-0.012em; line-height:1.25; font-weight:600; }
+    .h-eyebrow{ letter-spacing:.18em; text-transform:uppercase; font-weight:600; font-size:11px; color:var(--text-muted); }
+    .num{ font-variant-numeric:tabular-nums lining-nums; font-feature-settings:"tnum","lnum"; }
+    .micro{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-weight:600; color:var(--text-muted); }
+
+    /* Atmosphere */
+    .atmos{
+      background:
+        radial-gradient(ellipse 70% 55% at 88% -10%, rgba(230,185,121,.22), transparent 60%),
+        radial-gradient(ellipse 55% 45% at 8% 20%, rgba(198,165,89,.10), transparent 70%),
+        radial-gradient(ellipse 90% 40% at 50% 110%, rgba(138,111,53,.16), transparent 65%),
+        var(--bg-base);
+    }
+    .noise{ position:relative; }
+    .noise::before{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      opacity:.05; mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 .86 0 0 0 0 .58 0 0 0 .8 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+
+    .gold-text{
+      background:linear-gradient(135deg,#F6E2B5 0%,#E6B979 35%,#C6A559 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .gold-bg{
+      background:linear-gradient(135deg,#F0CC8C 0%,#E6B979 30%,#C6A559 70%,#A38640 100%);
+    }
+    .gold-rule{
+      height:1px;
+      background:linear-gradient(90deg, transparent, var(--border-strong), transparent);
+    }
+    .gold-rule-v{
+      width:1px; height:100%;
+      background:linear-gradient(180deg, transparent, var(--border-strong), transparent);
+    }
+
+    /* Buttons */
+    .btn-primary{
+      position:relative; display:inline-flex; align-items:center; gap:8px;
+      padding:13px 22px; border-radius:999px;
+      font-weight:600; letter-spacing:.01em; font-size:14px;
+      color:#1A1407;
+      background:linear-gradient(135deg,#F0CC8C 0%,#E6B979 28%,#C6A559 68%,#A38640 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,240,200,.6),
+        inset 0 -1px 0 rgba(80,55,15,.4),
+        0 6px 20px -8px rgba(230,185,121,.6),
+        0 22px 46px -18px rgba(198,165,89,.5);
+      transition: transform 240ms cubic-bezier(.2,.8,.2,1), box-shadow 240ms cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,240,200,.7),
+        inset 0 -1px 0 rgba(80,55,15,.4),
+        0 10px 28px -8px rgba(230,185,121,.7),
+        0 30px 56px -22px rgba(198,165,89,.6);
+    }
+    .btn-primary:focus-visible{ outline:2px solid var(--gold-light); outline-offset:3px; }
+    .btn-primary:active{ transform:translateY(0); }
+    .btn-primary::after{
+      content:""; position:absolute; inset:0; border-radius:999px;
+      background:linear-gradient(135deg, rgba(255,255,255,.4), transparent 38%);
+      opacity:0; transition: opacity 240ms ease; pointer-events:none;
+    }
+    .btn-primary:hover::after{ opacity:1; }
+
+    .btn-ghost{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 21px; border-radius:999px; font-size:14px;
+      font-weight:500; color:var(--text-primary);
+      border:1px solid var(--border-strong);
+      background:rgba(255,255,255,.02);
+      transition: transform 220ms cubic-bezier(.2,.8,.2,1), background-color 220ms ease, border-color 220ms ease;
+    }
+    .btn-ghost:hover{
+      background:rgba(198,165,89,.08);
+      border-color:rgba(230,185,121,.55);
+      transform:translateY(-2px);
+    }
+    .btn-ghost:focus-visible{ outline:2px solid var(--gold-light); outline-offset:3px; }
+
+    .btn-small{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:9px 16px; border-radius:999px;
+      font-weight:500; font-size:13px; color:var(--text-primary);
+      border:1px solid var(--border-strong);
+      transition: background-color 200ms ease, border-color 200ms ease, transform 200ms cubic-bezier(.2,.8,.2,1);
+    }
+    .btn-small:hover{ background:rgba(198,165,89,.08); border-color:rgba(230,185,121,.55); transform:translateY(-1px); }
+    .btn-small:focus-visible{ outline:2px solid var(--gold-light); outline-offset:3px; }
+
+    /* Nav */
+    .nav-bg{
+      background:rgba(11,10,8,.62);
+      backdrop-filter:saturate(160%) blur(16px);
+      -webkit-backdrop-filter:saturate(160%) blur(16px);
+      border-bottom:1px solid var(--border-subtle);
+    }
+    .nav-link{
+      position:relative; color:var(--text-secondary);
+      font-size:13px; font-weight:500; letter-spacing:.01em;
+      padding:8px 4px; transition: color 200ms ease;
+    }
+    .nav-link:hover{ color:var(--text-primary); }
+    .nav-link::after{
+      content:""; position:absolute; left:4px; right:4px; bottom:3px; height:1px;
+      background:var(--gold-light);
+      transform:scaleX(0); transform-origin:left;
+      transition: transform 280ms cubic-bezier(.2,.8,.2,1);
+    }
+    .nav-link:hover::after{ transform:scaleX(1); }
+    .nav-link:focus-visible{ outline:2px solid var(--gold-light); outline-offset:4px; border-radius:4px; }
+
+    /* Chip */
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 14px 6px 10px; border-radius:999px;
+      background:rgba(198,165,89,.08);
+      border:1px solid var(--border-subtle);
+      color:var(--gold-light); font-size:12px; font-weight:500; letter-spacing:.02em;
+    }
+    .chip-dot{
+      width:6px; height:6px; border-radius:999px; background:var(--gold-light);
+      box-shadow:0 0 12px var(--gold-light), 0 0 0 3px rgba(230,185,121,.15);
+    }
+
+    /* Cards */
+    .card{
+      position:relative;
+      background:linear-gradient(180deg, rgba(31,26,18,.72) 0%, rgba(21,18,13,.72) 100%);
+      border:1px solid var(--border-subtle);
+      border-radius:18px;
+      backdrop-filter: blur(8px);
+      transition: transform 280ms cubic-bezier(.2,.8,.2,1), border-color 280ms ease, box-shadow 280ms ease;
+    }
+    .card:hover{
+      transform:translateY(-3px);
+      border-color:var(--border-strong);
+      box-shadow:
+        0 24px 60px -28px var(--gold-glow),
+        inset 0 1px 0 rgba(230,185,121,.08);
+    }
+
+    .icon-wrap{
+      width:42px; height:42px; border-radius:12px;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg, rgba(230,185,121,.16), rgba(198,165,89,.04));
+      border:1px solid var(--border-strong);
+      color:var(--gold-light);
+      box-shadow: inset 0 1px 0 rgba(255,240,200,.10);
+    }
+
+    /* Mockup */
+    .mockup{
+      position:relative;
+      background:linear-gradient(180deg,#18140E 0%,#14110B 100%);
+      border:1px solid var(--border-subtle);
+      border-radius:18px;
+      box-shadow:
+        0 60px 120px -40px rgba(0,0,0,.85),
+        0 30px 80px -30px var(--gold-glow),
+        inset 0 1px 0 rgba(255,240,200,.05);
+    }
+    .mockup-chrome{
+      display:flex; align-items:center; gap:8px;
+      padding:12px 16px;
+      border-bottom:1px solid var(--border-subtle);
+    }
+    .mockup-dot{ width:9px; height:9px; border-radius:999px; background:rgba(255,255,255,.10); }
+    .tree-row{
+      display:flex; align-items:center; gap:10px;
+      padding:7px 10px; border-radius:8px;
+      font-size:12.5px; color:var(--text-secondary);
+      transition: background-color 180ms ease, color 180ms ease;
+    }
+    .tree-row:hover{ background:rgba(255,255,255,.02); color:var(--text-primary); }
+    .tree-row.active{
+      background:rgba(198,165,89,.10);
+      color:var(--text-primary);
+      border:1px solid rgba(198,165,89,.22);
+      padding:6px 9px;
+    }
+    .tree-section{
+      font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--text-muted); padding:14px 10px 6px; font-weight:600;
+    }
+    .finding{
+      display:flex; align-items:flex-start; gap:12px;
+      padding:14px 18px; border-top:1px solid var(--border-subtle);
+      transition: background-color 200ms ease;
+    }
+    .finding:hover{ background:rgba(198,165,89,.04); }
+    .sev{ width:8px; height:8px; border-radius:999px; margin-top:7px; flex-shrink:0; }
+    .sev-high{ background:#D87B5A; box-shadow:0 0 0 3px rgba(216,123,90,.20); }
+    .sev-med { background:#E6B979; box-shadow:0 0 0 3px rgba(230,185,121,.20); }
+    .sev-low { background:#8FB76A; box-shadow:0 0 0 3px rgba(143,183,106,.20); }
+
+    /* Floating badges around mockup */
+    .float-card{
+      position:absolute;
+      background:linear-gradient(180deg, rgba(34,28,19,.92), rgba(21,18,13,.92));
+      border:1px solid var(--border-strong);
+      border-radius:14px;
+      backdrop-filter: blur(8px);
+      box-shadow:
+        0 28px 60px -24px rgba(0,0,0,.7),
+        0 18px 40px -20px var(--gold-glow);
+    }
+
+    /* Steps */
+    .step-num{
+      width:60px; height:60px; border-radius:16px;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg, rgba(230,185,121,.14), rgba(198,165,89,.03));
+      border:1px solid var(--border-strong);
+      font-weight:300; font-size:24px;
+      color:var(--gold-light);
+      font-variant-numeric: tabular-nums; letter-spacing:-.02em;
+      box-shadow: inset 0 1px 0 rgba(255,240,200,.08);
+    }
+
+    /* Pricing */
+    .price-popular{
+      border-color:rgba(230,185,121,.55);
+      box-shadow:
+        0 36px 80px -32px var(--gold-glow),
+        inset 0 1px 0 rgba(230,185,121,.14);
+    }
+    .ribbon{
+      position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+      padding:5px 12px; border-radius:999px;
+      font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+      color:#1A1407;
+    }
+
+    /* Logo wordmark accent */
+    .wordmark{
+      font-weight:800; letter-spacing:-.02em; font-size:18px;
+      color:var(--text-primary);
+    }
+    .wordmark .dot{ color:var(--gold-light); }
+
+    /* Logo squircle replica for footer + lockup; PNG is used for full-fidelity */
+    .logo-mark{
+      width:30px; height:30px; border-radius:8px;
+      background:linear-gradient(135deg,#F0CC8C 0%,#E6B979 28%,#C6A559 68%,#8A6F35 100%);
+      display:inline-flex; align-items:center; justify-content:center;
+      box-shadow:
+        inset 0 1px 0 rgba(255,240,200,.55),
+        inset 0 -1px 0 rgba(80,55,15,.4),
+        0 8px 22px -8px rgba(230,185,121,.55);
+    }
+
+    /* Section spacing helpers */
+    .sec{ padding-top:120px; padding-bottom:120px; }
+    @media (max-width:768px){ .sec{ padding-top:80px; padding-bottom:80px; } }
+
+    /* Reveal animations on page load */
+    @keyframes fade-up{ 0%{opacity:0; transform:translateY(14px);} 100%{opacity:1; transform:translateY(0);} }
+    @keyframes fade-in{ 0%{opacity:0;} 100%{opacity:1;} }
+    @keyframes pulse-dot{ 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.45; transform:scale(.82);} }
+    @keyframes shimmer{ 0%{ transform:translateX(-120%);} 100%{ transform:translateX(120%);} }
+    @keyframes float-y{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+
+    .a-rise{ animation: fade-up 800ms cubic-bezier(.2,.8,.2,1) both; }
+    .a-fade{ animation: fade-in 1000ms ease both; }
+    .a-pulse{ animation: pulse-dot 1800ms ease-in-out infinite; }
+    .a-float{ animation: float-y 6s ease-in-out infinite; }
+    .d1{ animation-delay:80ms; } .d2{ animation-delay:160ms; } .d3{ animation-delay:260ms; }
+    .d4{ animation-delay:380ms; } .d5{ animation-delay:520ms; } .d6{ animation-delay:680ms; }
+    .d7{ animation-delay:860ms; }
+
+    /* Shimmer over mockup */
+    .sweep-host{ position:relative; overflow:hidden; }
+    .sweep{
+      position:absolute; inset:-10% 0;
+      background:linear-gradient(105deg, transparent 42%, rgba(230,185,121,.05) 50%, transparent 58%);
+      animation: shimmer 7s ease-in-out infinite;
+      pointer-events:none;
+    }
+
+    /* ===== Elegant floating orbs (hero background) ===== */
+    .hero-orbs{
+      position:absolute; inset:0;
+      overflow:hidden;
+      pointer-events:none;
+      z-index:0;
+    }
+    .orb{
+      position:absolute; opacity:0;
+      animation: orb-enter 2.4s cubic-bezier(.23,.86,.39,.96) forwards;
+    }
+    .orb-inner{
+      position:relative;
+      animation: orb-bob 12s ease-in-out infinite;
+    }
+    .orb-fill{
+      position:absolute; inset:0; border-radius:9999px;
+      background: linear-gradient(to right, var(--tint, rgba(230,185,121,.15)), transparent);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      border: 2px solid rgba(230,185,121,.18);
+      box-shadow: 0 8px 32px 0 rgba(230,185,121,.10);
+    }
+    .orb-fill::after{
+      content:""; position:absolute; inset:0; border-radius:9999px;
+      background: radial-gradient(circle at 50% 50%, rgba(230,185,121,.22), transparent 70%);
+    }
+    @keyframes orb-enter{
+      0%   { opacity:0; transform: translateY(-150px) rotate(var(--rot-start, 0deg)); }
+      50%  { opacity:1; }
+      100% { opacity:1; transform: translateY(0) rotate(var(--rot-end, 0deg)); }
+    }
+    @keyframes orb-bob{
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(15px); }
+    }
+
+    /* Per-orb position, size, rotation, delay */
+    .orb-1 { left:-10%; top:15%; animation-delay:.3s; --rot-start:-3deg;  --rot-end:12deg;  --tint: rgba(230,185,121,.18); }
+    .orb-1 .orb-inner { width:600px; height:140px; }
+    .orb-2 { right:-5%; top:70%; animation-delay:.5s; --rot-start:-30deg; --rot-end:-15deg; --tint: rgba(138,111,53,.22);  }
+    .orb-2 .orb-inner { width:500px; height:120px; }
+    .orb-3 { left:5%;   bottom:5%; animation-delay:.4s; --rot-start:-23deg; --rot-end:-8deg; --tint: rgba(198,165,89,.18); }
+    .orb-3 .orb-inner { width:300px; height:80px; }
+    .orb-4 { right:15%; top:10%; animation-delay:.6s; --rot-start:5deg;   --rot-end:20deg;  --tint: rgba(244,220,167,.18); }
+    .orb-4 .orb-inner { width:200px; height:60px; }
+    .orb-5 { left:20%;  top:5%;  animation-delay:.7s; --rot-start:-40deg; --rot-end:-25deg; --tint: rgba(163,134,64,.20);  }
+    .orb-5 .orb-inner { width:150px; height:40px; }
+
+    @media (min-width:768px){
+      .orb-1 { left:-5%;  top:20%; }
+      .orb-2 { right:0%;  top:75%; }
+      .orb-3 { left:10%;  bottom:10%; }
+      .orb-4 { right:20%; top:15%; }
+      .orb-5 { left:25%;  top:10%; }
+    }
+    @media (max-width:640px){
+      .orb-1 .orb-inner { width:340px; height:80px; }
+      .orb-2 .orb-inner { width:280px; height:70px; }
+      .orb-3 .orb-inner { width:200px; height:54px; }
+    }
+
+    /* Footer link */
+    .ft-link{ color:var(--text-muted); font-size:13px; transition: color 180ms ease; }
+    .ft-link:hover{ color:var(--text-primary); }
+    .ft-head{ font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold-light); font-weight:600; }
+
+    /* mobile menu */
+    .menu-toggle{ display:none; }
+    @media (max-width:960px){
+      .nav-links{ display:none; }
+      .menu-toggle{ display:inline-flex; }
+      .nav-cta-secondary{ display:none; }
+    }
+
+    /* responsive type ramps */
+    .display-1{ font-size: clamp(34px, 6.4vw, 78px); }
+    .display-2{ font-size: clamp(28px, 3.6vw, 46px); }
+    .display-3{ font-size: clamp(22px, 2.4vw, 32px); }
+    @media (max-width: 480px){
+      .display-1{ font-size: clamp(30px, 9vw, 44px); letter-spacing: -.035em; }
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+    }
+
+    /* Hide scrollbars in mockup tree on overflow but keep scroll */
+    .scroll-soft::-webkit-scrollbar{ width:6px; height:6px; }
+    .scroll-soft::-webkit-scrollbar-thumb{ background:rgba(198,165,89,.18); border-radius:999px; }
+    .scroll-soft::-webkit-scrollbar-track{ background:transparent; }
+  </style>
+</head>
+<body class="atmos noise overflow-x-hidden">
+
+  <!-- ================= NAV ================= -->
+  <header class="fixed top-0 inset-x-0 z-50 nav-bg">
+    <nav class="max-w-[1240px] mx-auto px-6 lg:px-10 h-[68px] flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E6B979] rounded-md" aria-label="Tester.io home">
+        <img src="/brand_assets/Tester%20Logo.png" alt="" width="30" height="30" class="block" style="filter: drop-shadow(0 4px 14px rgba(230,185,121,.35));" />
+        <span class="wordmark">Tester<span class="dot">.io</span></span>
+      </a>
+      <div class="hidden lg:flex items-center gap-8">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how" class="nav-link">How it works</a>
+        <a href="#proof" class="nav-link">Customers</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#" class="nav-link">Docs</a>
+      </div>
+      <div class="flex items-center gap-2.5">
+        <a href="#" class="hidden lg:inline-flex nav-link mr-2">Sign in</a>
+        <a href="#cta" class="btn-primary">
+          Get Started
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <button class="lg:hidden btn-small" aria-label="Menu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="relative pt-[160px] pb-[80px] md:pt-[180px] md:pb-[120px] overflow-hidden">
+    <!-- Floating elegant orbs (background atmosphere) -->
+    <div class="hero-orbs" aria-hidden="true">
+      <div class="orb orb-1"><div class="orb-inner"><div class="orb-fill"></div></div></div>
+      <div class="orb orb-2"><div class="orb-inner"><div class="orb-fill"></div></div></div>
+      <div class="orb orb-3"><div class="orb-inner"><div class="orb-fill"></div></div></div>
+      <div class="orb orb-4"><div class="orb-inner"><div class="orb-fill"></div></div></div>
+      <div class="orb orb-5"><div class="orb-inner"><div class="orb-fill"></div></div></div>
+    </div>
+    <div class="relative z-10 max-w-[1240px] mx-auto px-6 lg:px-10 grid lg:grid-cols-[1.05fr,1fr] gap-14 lg:gap-12 items-center">
+      <!-- Copy column -->
+      <div class="relative">
+        <div class="a-rise d1">
+          <span class="chip">
+            <span class="chip-dot a-pulse"></span>
+            AI document review for regulated teams
+          </span>
+        </div>
+        <h1 class="a-rise d2 h-display display-1 mt-6">
+          Read every <span class="gold-text">document.</span>
+          <span class="block">Catch every <span class="italic font-light">risk.</span></span>
+        </h1>
+        <p class="a-rise d3 mt-6 text-[17px] md:text-[18px] text-[color:var(--text-secondary)] max-w-[560px]">
+          Tester.io reviews contracts, financials, and policies in seconds &mdash; surfacing the clauses, anomalies, and compliance gaps your team would otherwise miss.
+        </p>
+        <div class="a-rise d4 mt-9 flex flex-wrap items-center gap-3">
+          <a href="#cta" class="btn-primary">
+            Get Started
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#how" class="btn-ghost">
+            Learn More
+          </a>
+        </div>
+        <!-- Stat row -->
+        <div class="a-rise d5 mt-12 grid grid-cols-3 gap-4 sm:gap-6 max-w-[520px]">
+          <div>
+            <div class="num h-display text-[24px] sm:text-[32px] gold-text leading-none">4.2s</div>
+            <div class="micro mt-2">avg. review</div>
+          </div>
+          <div class="border-l border-[color:var(--border-subtle)] pl-4 sm:pl-6">
+            <div class="num h-display text-[24px] sm:text-[32px] gold-text leading-none">98.7%</div>
+            <div class="micro mt-2">precision</div>
+          </div>
+          <div class="border-l border-[color:var(--border-subtle)] pl-4 sm:pl-6">
+            <div class="num h-display text-[24px] sm:text-[32px] gold-text leading-none">SOC&nbsp;2</div>
+            <div class="micro mt-2">type II</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup column -->
+      <div class="relative a-fade d3">
+        <!-- Glow halo -->
+        <div aria-hidden="true" class="absolute -inset-10 -z-10" style="background: radial-gradient(60% 50% at 70% 30%, rgba(230,185,121,.18), transparent 70%);"></div>
+
+        <div class="mockup sweep-host">
+          <div class="sweep"></div>
+          <!-- Chrome -->
+          <div class="mockup-chrome">
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+            <div class="ml-3 flex-1 flex items-center justify-center">
+              <div class="px-3 py-1 rounded-md text-[11px] text-[color:var(--text-muted)] num" style="background:rgba(255,255,255,.025); border:1px solid var(--border-subtle);">
+                tester.io / workspace / acme-corp / q4-review
+              </div>
+            </div>
+            <span class="text-[10px] tracking-[.18em] uppercase text-[color:var(--text-muted)] font-semibold">Live</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[180px,1fr]">
+            <!-- Sidebar tree -->
+            <aside class="hidden sm:block border-r border-[color:var(--border-subtle)] py-3 scroll-soft" style="background:rgba(255,255,255,.012);">
+              <div class="tree-section">Acme Folder Trial</div>
+              <div class="px-2 space-y-0.5">
+                <div class="tree-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" stroke="currentColor" stroke-width="1.4"/></svg>
+                  Finance
+                </div>
+                <div class="pl-5 space-y-0.5">
+                  <div class="tree-row active">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4"/></svg>
+                    <span class="truncate">q4_financial_review</span>
+                  </div>
+                  <div class="tree-row">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4"/></svg>
+                    <span class="truncate">budget_tracker</span>
+                  </div>
+                </div>
+                <div class="tree-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" stroke="currentColor" stroke-width="1.4"/></svg>
+                  Sales
+                </div>
+                <div class="tree-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" stroke="currentColor" stroke-width="1.4"/></svg>
+                  Projects
+                </div>
+                <div class="tree-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" stroke="currentColor" stroke-width="1.4"/></svg>
+                  HR
+                </div>
+                <div class="tree-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" stroke="currentColor" stroke-width="1.4"/></svg>
+                  IT
+                </div>
+              </div>
+            </aside>
+
+            <!-- Findings panel -->
+            <div>
+              <div class="flex items-center justify-between px-5 py-4 border-b border-[color:var(--border-subtle)]">
+                <div>
+                  <div class="text-[13px] font-semibold text-[color:var(--text-primary)] tracking-tight">q4_financial_review.docx</div>
+                  <div class="text-[11px] text-[color:var(--text-muted)] mt-0.5 num">Reviewed against <span style="color:var(--gold-light)">SOX Internal Controls v4</span> &middot; 38 pages &middot; 4.2s</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="num text-[11px] text-[color:var(--text-muted)] tracking-wider uppercase font-semibold">12 findings</span>
+                  <span class="w-7 h-7 rounded-md inline-flex items-center justify-center" style="background:rgba(230,185,121,.10); border:1px solid var(--border-strong); color:var(--gold-light);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <div class="finding">
+                  <span class="sev sev-high"></span>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="text-[13px] text-[color:var(--text-primary)] font-semibold tracking-tight">Revenue recognition deviation &mdash; §4.2</div>
+                      <span class="num text-[11px] text-[color:var(--text-muted)]">p. 14</span>
+                    </div>
+                    <div class="text-[12.5px] text-[color:var(--text-muted)] mt-1 leading-relaxed">Q4 contract milestones recognized before delivery criteria are met in ASC 606 framework.</div>
+                  </div>
+                </div>
+                <div class="finding">
+                  <span class="sev sev-med"></span>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="text-[13px] text-[color:var(--text-primary)] font-semibold tracking-tight">Footnote 11 inconsistency</div>
+                      <span class="num text-[11px] text-[color:var(--text-muted)]">p. 22</span>
+                    </div>
+                    <div class="text-[12.5px] text-[color:var(--text-muted)] mt-1 leading-relaxed">Lease liability total of $4.8M conflicts with figure in budget_tracker.xlsx (cell H42).</div>
+                  </div>
+                </div>
+                <div class="finding">
+                  <span class="sev sev-med"></span>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="text-[13px] text-[color:var(--text-primary)] font-semibold tracking-tight">Missing related-party disclosure</div>
+                      <span class="num text-[11px] text-[color:var(--text-muted)]">p. 28</span>
+                    </div>
+                    <div class="text-[12.5px] text-[color:var(--text-muted)] mt-1 leading-relaxed">Vendor named &ldquo;Halberd LLC&rdquo; appears in expense roll-up without disclosure in §7.</div>
+                  </div>
+                </div>
+                <div class="finding">
+                  <span class="sev sev-low"></span>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="text-[13px] text-[color:var(--text-primary)] font-semibold tracking-tight">Tone &amp; clarity &mdash; executive summary</div>
+                      <span class="num text-[11px] text-[color:var(--text-muted)]">p. 3</span>
+                    </div>
+                    <div class="text-[12.5px] text-[color:var(--text-muted)] mt-1 leading-relaxed">Two sentences exceed 60 words; consider splitting for reviewer readability.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-5 py-3 border-t border-[color:var(--border-subtle)] flex items-center justify-between">
+                <div class="text-[11px] text-[color:var(--text-muted)] tracking-wider uppercase font-semibold">Showing 4 of 12</div>
+                <div class="text-[11px] text-[color:var(--gold-light)] tracking-wider uppercase font-semibold flex items-center gap-1">
+                  Open audit trail
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating cards -->
+        <div class="float-card a-rise d6 a-float hidden md:block" style="left:-44px; top:62%; padding:14px 16px; max-width:230px;">
+          <div class="micro" style="color:var(--gold-light);">Cross-doc match</div>
+          <div class="text-[13px] mt-1.5 leading-snug">Lease figure in <span class="num">q4_financial</span> matches <span class="num">budget_tracker</span> after reconciliation.</div>
+        </div>
+        <div class="float-card a-rise d7 hidden md:block" style="right:-30px; top:-22px; padding:12px 14px;">
+          <div class="flex items-center gap-2">
+            <div class="logo-mark" style="width:24px; height:24px; border-radius:6px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#1A1407" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="text-[11px] tracking-[.14em] uppercase font-semibold" style="color:var(--gold-light);">Reviewed</div>
+              <div class="num text-[12px] text-[color:var(--text-muted)]">10 docs &middot; 0 errors</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRUST STRIP ================= -->
+  <section class="relative pt-4 pb-4">
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10">
+      <div class="gold-rule"></div>
+      <div class="py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="micro flex items-center"><span class="inline-block w-6 h-px align-middle mr-3" style="background:var(--gold-light)"></span>Trusted by finance, legal &amp; compliance teams at</div>
+        <div class="flex flex-wrap items-center gap-x-10 gap-y-4 opacity-75">
+          <span class="text-[15px] tracking-[.22em] font-semibold text-[color:var(--text-muted)]">NORTHWIND</span>
+          <span class="text-[15px] tracking-[.22em] font-semibold text-[color:var(--text-muted)]">MERIDIAN&nbsp;CAPITAL</span>
+          <span class="text-[15px] tracking-[.22em] font-semibold text-[color:var(--text-muted)]">ASTRAL&nbsp;HEALTH</span>
+          <span class="text-[15px] tracking-[.22em] font-semibold text-[color:var(--text-muted)]">OXFORD &amp; PARK</span>
+          <span class="text-[15px] tracking-[.22em] font-semibold text-[color:var(--text-muted)]">HARBOUR&nbsp;FIN.</span>
+          <span class="text-[15px] tracking-[.22em] font-semibold text-[color:var(--text-muted)]">WEST&nbsp;POINT&nbsp;GROUP</span>
+        </div>
+      </div>
+      <div class="gold-rule"></div>
+    </div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section id="features" class="sec relative">
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10">
+      <div class="grid lg:grid-cols-[1fr,1.4fr] gap-12 lg:gap-20 items-end mb-16">
+        <div>
+          <div class="micro"><span class="inline-block w-6 h-px align-middle mr-3" style="background:var(--gold-light)"></span>The product</div>
+          <h2 class="h-section display-2 mt-4">A reviewer that <span class="gold-text">never tires,</span><br/>and never misses the footnote.</h2>
+        </div>
+        <p class="text-[16px] text-[color:var(--text-secondary)] max-w-[560px] lg:justify-self-end">
+          Tester.io reads documents the way your most rigorous senior reviewer would &mdash; against your playbook, your regulators, and every other document already in the room.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- 1 -->
+        <article class="card p-7">
+          <div class="icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M14 3v6h5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M9 13h6M9 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="h-feature display-3 mt-6">Clause &amp; policy detection</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)]">Every clause matched against your playbook, with exceptions flagged and rated for review.</p>
+        </article>
+        <!-- 2 -->
+        <article class="card p-7">
+          <div class="icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 20V6M4 20h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M7 16l4-5 3 3 5-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="19" cy="7" r="1.4" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3 class="h-feature display-3 mt-6">Financial anomaly scan</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)]">Spot reconciliation gaps, outlier expenses, and revenue rule violations across statements.</p>
+        </article>
+        <!-- 3 -->
+        <article class="card p-7">
+          <div class="icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3 4 6v6c0 4.5 3.5 8.4 8 9 4.5-.6 8-4.5 8-9V6l-8-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="h-feature display-3 mt-6">Regulatory compliance</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)]">Built-in checks for SOX, HIPAA, GDPR, and your own internal frameworks &mdash; versioned over time.</p>
+        </article>
+        <!-- 4 -->
+        <article class="card p-7">
+          <div class="icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 4h6l4 4v3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M5 4h2v12H5z" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M11 13h6l4 4v3a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V13z" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M14 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="h-feature display-3 mt-6">Cross-document consistency</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)]">Catch the line item in the contract that disagrees with the invoice, schedule, or MSA.</p>
+        </article>
+        <!-- 5 -->
+        <article class="card p-7">
+          <div class="icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 4h6a1 1 0 0 1 1 1v1h2a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h2V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M9 11h6M9 14h6M9 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="h-feature display-3 mt-6">Audit-ready evidence trail</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)]">Every finding cites the exact passage, with reviewer notes and a tamper-evident log.</p>
+        </article>
+        <!-- 6 -->
+        <article class="card p-7">
+          <div class="icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="12" cy="15" r="1.4" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3 class="h-feature display-3 mt-6">Built for sensitive data</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)]">SOC 2 Type II, ISO 27001, regional data residency &mdash; and zero training on your documents.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section id="how" class="sec relative">
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-[680px] mx-auto mb-20">
+        <div class="micro inline-flex items-center justify-center"><span class="inline-block w-6 h-px align-middle mr-3" style="background:var(--gold-light)"></span>How it works</div>
+        <h2 class="h-section display-2 mt-4">From folder to <span class="gold-text">findings,</span> in three moves.</h2>
+        <p class="mt-5 text-[16px] text-[color:var(--text-secondary)]">
+          Tester.io plugs into the documents you already have. You set the standard. We do the reading.
+        </p>
+      </div>
+
+      <div class="relative grid md:grid-cols-3 gap-10 md:gap-6">
+        <!-- Connector line on desktop -->
+        <div aria-hidden="true" class="hidden md:block absolute left-[12%] right-[12%] top-[40px] h-px" style="background:linear-gradient(90deg, transparent, var(--border-strong), transparent);"></div>
+
+        <div class="relative">
+          <div class="step-num num">01</div>
+          <h3 class="h-feature display-3 mt-6">Connect</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)] max-w-[320px]">
+            Point Tester.io at SharePoint, Google Drive, Box, or your local folder structure. We mirror your hierarchy &mdash; <span class="num">Finance</span>, <span class="num">Sales</span>, <span class="num">HR</span>, <span class="num">Legal</span>, <span class="num">IT</span>.
+          </p>
+        </div>
+        <div class="relative">
+          <div class="step-num num">02</div>
+          <h3 class="h-feature display-3 mt-6">Review</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)] max-w-[320px]">
+            Run a review against your policy library, a regulatory framework, or a previous deal as the standard. Tester.io reads in seconds, not weeks.
+          </p>
+        </div>
+        <div class="relative">
+          <div class="step-num num">03</div>
+          <h3 class="h-feature display-3 mt-6">Resolve</h3>
+          <p class="mt-3 text-[14.5px] text-[color:var(--text-secondary)] max-w-[320px]">
+            Triage findings, assign reviewers, and export an audit-ready report &mdash; all without leaving the workspace. Your team owns every call.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SOCIAL PROOF ================= -->
+  <section id="proof" class="sec relative">
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10">
+      <div class="grid lg:grid-cols-[1.4fr,1fr] gap-6">
+        <!-- Featured quote -->
+        <figure class="card p-10 md:p-12 relative overflow-hidden">
+          <div aria-hidden="true" class="absolute -top-12 -left-6 text-[180px] leading-none font-bold" style="color:rgba(230,185,121,.07); font-family:'Montserrat'; letter-spacing:-0.06em;">&ldquo;</div>
+          <blockquote class="relative">
+            <p class="text-[20px] md:text-[24px] leading-[1.45] tracking-tight font-medium text-[color:var(--text-primary)]">
+              We replaced a four-week external review with a six-hour Tester.io pass. The findings were sharper, the trail was cleaner, and we still owned every judgement call.
+            </p>
+          </blockquote>
+          <figcaption class="mt-8 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center font-semibold text-[14px]" style="background:linear-gradient(135deg, rgba(230,185,121,.25), rgba(198,165,89,.08)); color:var(--gold-light); border:1px solid var(--border-strong);">LS</div>
+            <div>
+              <div class="text-[14px] font-semibold tracking-tight">Linnea Stadler</div>
+              <div class="text-[12.5px] text-[color:var(--text-muted)]">Director of Internal Audit &middot; mid-market manufacturer</div>
+            </div>
+          </figcaption>
+        </figure>
+
+        <!-- Smaller quotes -->
+        <div class="grid gap-6">
+          <figure class="card p-7">
+            <blockquote>
+              <p class="text-[15px] leading-relaxed text-[color:var(--text-secondary)]">
+                &ldquo;Half my Q-end is spent staring at footnotes. Tester.io reads them all and tells me which ones I actually need to look at.&rdquo;
+              </p>
+            </blockquote>
+            <figcaption class="mt-5 text-[12.5px] text-[color:var(--text-muted)]">
+              <span class="text-[color:var(--text-primary)] font-semibold">Marc Iwasaki</span> &middot; Senior Counsel
+            </figcaption>
+          </figure>
+          <figure class="card p-7">
+            <blockquote>
+              <p class="text-[15px] leading-relaxed text-[color:var(--text-secondary)]">
+                &ldquo;The audit trail alone justifies the contract. We hand it to regulators and they're done in two meetings.&rdquo;
+              </p>
+            </blockquote>
+            <figcaption class="mt-5 text-[12.5px] text-[color:var(--text-muted)]">
+              <span class="text-[color:var(--text-primary)] font-semibold">Priya Achar</span> &middot; Head of Compliance
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRICING ================= -->
+  <section id="pricing" class="sec relative">
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-[640px] mx-auto mb-16">
+        <div class="micro inline-flex items-center justify-center"><span class="inline-block w-6 h-px align-middle mr-3" style="background:var(--gold-light)"></span>Pricing</div>
+        <h2 class="h-section display-2 mt-4">Built for teams who can't <span class="gold-text">afford a miss.</span></h2>
+        <p class="mt-5 text-[16px] text-[color:var(--text-secondary)]">No per-document fees. No surprise overages. Start free &mdash; upgrade when your team can't go back.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-5 items-stretch">
+        <!-- Starter -->
+        <div class="card p-8 flex flex-col">
+          <div class="micro">Starter</div>
+          <div class="mt-4 flex items-baseline gap-1">
+            <span class="num h-display text-[44px] leading-none">$0</span>
+            <span class="text-[13px] text-[color:var(--text-muted)]">/ month</span>
+          </div>
+          <p class="mt-3 text-[14px] text-[color:var(--text-muted)]">For individuals trying Tester.io on a single project.</p>
+          <ul class="mt-6 space-y-3 text-[14px] text-[color:var(--text-secondary)] flex-1">
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Up to 50 documents / month</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>1 seat, 1 workspace</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Standard policy library</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Email support</li>
+          </ul>
+          <a href="#" class="btn-ghost mt-8 justify-center">Start free</a>
+        </div>
+
+        <!-- Team (popular) -->
+        <div class="card price-popular p-8 flex flex-col relative">
+          <span class="ribbon gold-bg">Most popular</span>
+          <div class="micro" style="color:var(--gold-light)">Team</div>
+          <div class="mt-4 flex items-baseline gap-1">
+            <span class="num h-display text-[44px] leading-none gold-text">$79</span>
+            <span class="text-[13px] text-[color:var(--text-muted)]">/ user / month</span>
+          </div>
+          <p class="mt-3 text-[14px] text-[color:var(--text-muted)]">For finance, legal and compliance teams reviewing at scale.</p>
+          <ul class="mt-6 space-y-3 text-[14px] text-[color:var(--text-secondary)] flex-1">
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited documents</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Custom policy library &amp; review templates</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audit trail &amp; reviewer roles</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>SharePoint, Drive, Box integrations</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li>
+          </ul>
+          <a href="#" class="btn-primary mt-8 justify-center">Start 14-day trial</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="card p-8 flex flex-col">
+          <div class="micro">Enterprise</div>
+          <div class="mt-4 flex items-baseline gap-1">
+            <span class="h-display text-[40px] leading-none tracking-tight">Custom</span>
+          </div>
+          <p class="mt-3 text-[14px] text-[color:var(--text-muted)]">For regulated, multi-region organizations.</p>
+          <ul class="mt-6 space-y-3 text-[14px] text-[color:var(--text-secondary)] flex-1">
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>SSO, SCIM, role-based access</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>On-prem or private VPC deployment</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Custom regulatory frameworks</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated success engineer</li>
+            <li class="flex gap-3"><svg class="mt-1 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#E6B979" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>99.9% SLA</li>
+          </ul>
+          <a href="#" class="btn-ghost mt-8 justify-center">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section id="cta" class="relative py-32 md:py-40">
+    <div aria-hidden="true" class="absolute inset-0 -z-10" style="background: radial-gradient(50% 70% at 50% 50%, rgba(230,185,121,.18), transparent 70%);"></div>
+    <div class="max-w-[920px] mx-auto px-6 lg:px-10 text-center">
+      <div class="micro inline-flex items-center justify-center"><span class="inline-block w-6 h-px align-middle mr-3" style="background:var(--gold-light)"></span>Get started</div>
+      <h2 class="h-section mt-6" style="font-size:clamp(34px, 5.4vw, 64px); letter-spacing:-.03em; line-height:1.05;">
+        Stop reviewing <span class="italic font-light">line by line.</span><br/>
+        Run your first <span class="gold-text">50 documents</span> this afternoon.
+      </h2>
+      <p class="mt-6 text-[16px] text-[color:var(--text-secondary)] max-w-[520px] mx-auto">Free trial. No credit card. Bring your own folder structure &mdash; we'll mirror it in minutes.</p>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <a href="#" class="btn-primary">
+          Get Started
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#" class="btn-ghost">Book a 20-min demo</a>
+      </div>
+      <div class="mt-10 text-[11px] tracking-[.16em] uppercase font-semibold text-[color:var(--text-muted)] flex items-center justify-center gap-5 flex-wrap">
+        <span>SOC 2 Type II</span><span class="opacity-40">&middot;</span>
+        <span>ISO 27001</span><span class="opacity-40">&middot;</span>
+        <span>GDPR &amp; HIPAA</span><span class="opacity-40">&middot;</span>
+        <span>Zero training on your data</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="relative">
+    <div class="gold-rule"></div>
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10 py-16 grid lg:grid-cols-[1.4fr,2.6fr] gap-12">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <img src="/brand_assets/Tester%20Logo.png" alt="Tester.io" width="30" height="30" />
+          <span class="wordmark">Tester<span class="dot">.io</span></span>
+        </div>
+        <p class="mt-5 text-[14px] text-[color:var(--text-muted)] max-w-[320px]">
+          AI document review for finance, legal, and compliance teams &mdash; built for accuracy, audit, and trust.
+        </p>
+        <div class="mt-6 flex items-center gap-3">
+          <a href="#" class="w-9 h-9 rounded-full inline-flex items-center justify-center" style="border:1px solid var(--border-subtle); color:var(--text-muted)" aria-label="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4v4H4zm0 6h4v10H4zm6 0h4v2c.7-1.4 2.4-2.4 4-2.4 3 0 4 2 4 5V20h-4v-5.5c0-1.4-.5-2.3-1.8-2.3-1.3 0-2.2 1-2.2 2.5V20h-4V10z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-full inline-flex items-center justify-center" style="border:1px solid var(--border-subtle); color:var(--text-muted)" aria-label="X">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.3 3H21l-7.2 8.2L22 21h-6.4l-5-6.5L4.8 21H2l7.7-8.8L2 3h6.6l4.6 6 5.1-6z"/></svg>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-full inline-flex items-center justify-center" style="border:1px solid var(--border-subtle); color:var(--text-muted)" aria-label="GitHub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-2c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.4 1 3 .8.1-.7.4-1.1.7-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.5-1.3.1-2.7 0 0 .8-.3 2.8 1a9.5 9.5 0 0 1 5 0c2-1.3 2.8-1 2.8-1 .6 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
+        <div>
+          <div class="ft-head mb-4">Product</div>
+          <ul class="space-y-2.5">
+            <li><a href="#features" class="ft-link">Features</a></li>
+            <li><a href="#how" class="ft-link">How it works</a></li>
+            <li><a href="#pricing" class="ft-link">Pricing</a></li>
+            <li><a href="#" class="ft-link">Changelog</a></li>
+            <li><a href="#" class="ft-link">Roadmap</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="ft-head mb-4">Solutions</div>
+          <ul class="space-y-2.5">
+            <li><a href="#" class="ft-link">Legal teams</a></li>
+            <li><a href="#" class="ft-link">Finance teams</a></li>
+            <li><a href="#" class="ft-link">Compliance</a></li>
+            <li><a href="#" class="ft-link">Internal audit</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="ft-head mb-4">Company</div>
+          <ul class="space-y-2.5">
+            <li><a href="#" class="ft-link">About</a></li>
+            <li><a href="#" class="ft-link">Customers</a></li>
+            <li><a href="#" class="ft-link">Careers</a></li>
+            <li><a href="#" class="ft-link">Press</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="ft-head mb-4">Resources</div>
+          <ul class="space-y-2.5">
+            <li><a href="#" class="ft-link">Docs</a></li>
+            <li><a href="#" class="ft-link">Security</a></li>
+            <li><a href="#" class="ft-link">Integrations</a></li>
+            <li><a href="#" class="ft-link">Status</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-[1240px] mx-auto px-6 lg:px-10 pb-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-t border-[color:var(--border-subtle)] pt-6">
+      <div class="text-[12px] text-[color:var(--text-muted)] num">&copy; 2026 Tester.io &middot; All rights reserved.</div>
+      <div class="flex items-center gap-5 text-[12px] text-[color:var(--text-muted)]">
+        <a href="#" class="ft-link">Terms</a>
+        <a href="#" class="ft-link">Privacy</a>
+        <a href="#" class="ft-link">Security</a>
+        <a href="#" class="ft-link">DPA</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
